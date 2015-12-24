@@ -9,6 +9,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -23,6 +26,7 @@ import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
     ListView lv;
+    Button button;
     WifiManager wifi;
     String wifis[];
     WifiScanReceiver wifiReciever;
@@ -39,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
 
         wifi=(WifiManager)getSystemService(Context.WIFI_SERVICE);
         wifiReciever = new WifiScanReceiver();
-        wifi.startScan();
 
     }
     protected void onPause() {
@@ -49,9 +52,10 @@ public class MainActivity extends AppCompatActivity {
 
     protected void onResume() {
         registerReceiver(wifiReciever, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-        timer = new Timer();
-        myTimerTask = new MyTimerTask();
-        timer.schedule(myTimerTask, 5000,10000);
+        addListenerOnButton();
+        //timer = new Timer();
+       // myTimerTask = new MyTimerTask();
+       // timer.schedule(myTimerTask, 5000, 10000);
         super.onResume();
     }
     @Override
@@ -60,7 +64,21 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
+    public void addListenerOnButton() {
 
+        button = (Button) findViewById(R.id.button);
+
+        button.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+
+                wifi.startScan();
+            }
+
+        });
+
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
