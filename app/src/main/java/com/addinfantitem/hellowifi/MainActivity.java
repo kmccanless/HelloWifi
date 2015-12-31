@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -15,13 +16,19 @@ import android.widget.Button;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+import android.util.Log;
 
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import java.lang.StringBuilder;
+import java.io.File;
+import java.io.FileOutputStream;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -30,8 +37,8 @@ public class MainActivity extends AppCompatActivity {
     WifiManager wifi;
     String wifis[];
     WifiScanReceiver wifiReciever;
-    Timer timer;
-    MyTimerTask myTimerTask;
+   // Timer timer;
+   // MyTimerTask myTimerTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,12 +104,54 @@ public class MainActivity extends AppCompatActivity {
     private class WifiScanReceiver extends BroadcastReceiver{
         public void onReceive(Context c, Intent intent) {
             List<ScanResult> wifiScanList = wifi.getScanResults();
+            //FileOutputStream outputStream;
+
             wifis = new String[wifiScanList.size()];
+            StringBuilder sb;
+            //byte[]  = new String();
 
             for(int i = 0; i < wifiScanList.size(); i++){
-                wifis[i] = ((wifiScanList.get(i)).toString());
+                //wifis[i] = ((wifiScanList.get(i)).toString());
+                int rssi = wifiScanList.get(i).level;
+                int frequency = wifiScanList.get(i).frequency;
+                int level = wifiScanList.get(i).level;
+                String ssid =  wifiScanList.get(i).SSID;
+                String bssid = wifiScanList.get(i).BSSID;
+                long time = wifiScanList.get(i).timestamp;
+                int signal = wifi.calculateSignalLevel(rssi, 100);
+
+                sb = new StringBuilder();
+                sb.append(ssid);
+                sb.append(", ");
+                sb.append(bssid);
+                sb.append(", ");
+                sb.append(Integer.toString(frequency));
+                sb.append(", ");
+                sb.append(Integer.toString(level));
+                sb.append(", ");
+                sb.append(Long.toString(time));
+                sb.append(", ");
+                sb.append(Integer.toString(signal));
+                sb.append("\n");
+                wifis[i] = sb.toString();
+                //File file = new File(c.getFilesDir(), ssid + time);
+                //tempFile += wifis[i];
+
+            }
+            String filename = "wifi_signals";
+            try {
+                File file = new File(Environment.getExternalStorageDirectory(), filename + ".csv");
+                Log.v("CreateFile", file.getAbsolutePath());
+                //outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+                OutputStream os = new FileOutputStream(file);
+                os.write(sb.toString().getBytes());
+                os.close();
+                Log.v("CreateFile", "Wrote file " + filename);
+            } catch (Exception e) {
+                Log.e("CreateFile", e.getStackTrace().toString());
             }
             lv.setAdapter(new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_list_item_1,wifis));
+
         }
     }
     class MyTimerTask extends TimerTask {
