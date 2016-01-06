@@ -22,6 +22,7 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 
 import java.io.OutputStream;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -107,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
             //FileOutputStream outputStream;
 
             wifis = new String[wifiScanList.size()];
-            StringBuilder sb;
+            StringBuilder sb = new StringBuilder();
             //byte[]  = new String();
 
             for(int i = 0; i < wifiScanList.size(); i++){
@@ -120,7 +121,6 @@ public class MainActivity extends AppCompatActivity {
                 long time = wifiScanList.get(i).timestamp;
                 int signal = wifi.calculateSignalLevel(rssi, 100);
 
-                sb = new StringBuilder();
                 sb.append(ssid);
                 sb.append(", ");
                 sb.append(bssid);
@@ -133,14 +133,16 @@ public class MainActivity extends AppCompatActivity {
                 sb.append(", ");
                 sb.append(Integer.toString(signal));
                 sb.append("\n");
-                wifis[i] = sb.toString();
+                //wifis[i] = sb.toString();
                 //File file = new File(c.getFilesDir(), ssid + time);
                 //tempFile += wifis[i];
 
             }
             String filename = "wifi_signals";
             try {
-                File file = new File(Environment.getExternalStorageDirectory(), filename + ".csv");
+                String timeStamp = new java.text.SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+                wifis = sb.toString().split("\n");
+                File file = new File(Environment.getExternalStorageDirectory(), filename + timeStamp + ".csv");
                 Log.v("CreateFile", file.getAbsolutePath());
                 //outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
                 OutputStream os = new FileOutputStream(file);
