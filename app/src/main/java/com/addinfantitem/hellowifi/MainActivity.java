@@ -22,10 +22,12 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Hashtable;
 
 import java.lang.StringBuilder;
 import java.io.File;
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     WifiManager wifi;
     String wifis[];
     WifiScanReceiver wifiReciever;
+    //Hashtable<String,ScanResult>
    // Timer timer;
    // MyTimerTask myTimerTask;
 
@@ -173,5 +176,49 @@ public class MainActivity extends AppCompatActivity {
                 }});
         }
 
+    }
+    protected class Area {
+        private String name;
+        private Integer id;
+        private ArrayList<AccessPoint> scans;
+        private Integer averageStrength;
+        private Integer numberScans;
+
+        public Area (String name) {
+            name = this.name;
+        }
+        public void CreateMap(ScanResult scan) {
+            for(int i = 0; i < scan.size(); i++){
+
+            }
+        }
+    }
+
+    protected class Scan {
+        private Long time;
+
+        private Integer strength;
+        private Integer level;
+
+        public AccessPointScan(){
+            time = result.timestamp;
+            level = result.level;
+            strength = wifi.calculateSignalLevel(level, 100);
+        }
+
+
+    }
+    protected class AccessPoint {
+        private String ssid;
+        private String mac;
+        private Integer frequency;
+
+        public AccessPoint(ScanResult result) {
+            ssid = result.SSID;
+            mac = result.BSSID;
+
+            frequency = result.frequency;
+
+        }
     }
 }
